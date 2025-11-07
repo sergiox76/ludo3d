@@ -1,69 +1,35 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ludo 3D en Realidad Aumentada</title>
-
     <!-- Librerías principales -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/2.0.1/aframe/build/aframe-ar.min.js"></script>
-    <!-- Controlador de gestos táctiles -->
-    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.controls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@master/aframe/build/aframe-ar-nft.min.js"></script>
   </head>
 
   <body style="margin: 0; overflow: hidden;">
-    <!-- Escena AR -->
-    <a-scene embedded arjs>
+    <!-- Escena AR con modo sin marcador -->
+    <a-scene
+      vr-mode-ui="enabled: false"
+      embedded
+      arjs="sourceType: webcam; debugUIEnabled: false;">
+      
+      <!-- Carga del modelo 3D -->
       <a-assets>
-        <!-- Modelo 3D de Ludo -->
         <a-asset-item id="ludoModel" src="ludo.glb"></a-asset-item>
       </a-assets>
 
-      <!-- Entidad del modelo -->
+      <!-- Entidad del modelo centrada -->
       <a-entity
-        id="ludo"
         gltf-model="#ludoModel"
-        scale="0.6 0.6 0.6"
-        position="0 1 -2"
-        gesture-handler
+        position="0 0 -3"
+        scale="1 1 1"
+        rotation="0 0 0"
         animation-mixer>
       </a-entity>
 
-      <!-- Cámara con marcador -->
-      <a-marker-camera></a-marker-camera>
+      <!-- Cámara normal sin marcador -->
+      <a-entity camera></a-entity>
     </a-scene>
-
-    <!-- Script para interacción táctil -->
-    <script>
-      AFRAME.registerComponent('gesture-handler', {
-        schema: { enabled: { default: true } },
-        init: function () {
-          this.handleScale = this.handleScale.bind(this);
-          this.handleRotation = this.handleRotation.bind(this);
-
-          this.initialScale = this.el.object3D.scale.clone();
-          this.scaleFactor = 1;
-          this.rotationY = 0;
-
-          this.el.sceneEl.addEventListener('onefingermove', this.handleRotation);
-          this.el.sceneEl.addEventListener('twofingermove', this.handleScale);
-        },
-        handleRotation: function (event) {
-          if (!this.data.enabled) return;
-          this.rotationY += event.detail.positionChange.x * 2;
-          this.el.object3D.rotation.y = THREE.MathUtils.degToRad(this.rotationY);
-        },
-        handleScale: function (event) {
-          if (!this.data.enabled) return;
-          this.scaleFactor *= 1 + (event.detail.spreadChange / event.detail.startSpread) * 0.1;
-          this.el.object3D.scale.set(
-            this.initialScale.x * this.scaleFactor,
-            this.initialScale.y * this.scaleFactor,
-            this.initialScale.z * this.scaleFactor
-          );
-        }
-      });
-    </script>
   </body>
 </html>
